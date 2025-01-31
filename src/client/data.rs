@@ -7,8 +7,8 @@ use tokio::io::{AsyncReadExt, BufReader};
 use tokio::net::TcpStream;
 use tokio_rustls::TlsConnector;
 
-pub async fn handle_list(runtime: &mut Runtime) ->  Result<String, Box<dyn std::error::Error>> {
-    let result = runtime.send_command("LIST").await?;
+pub async fn handle_list(runtime: &mut Runtime, command: &str) ->  Result<String, Box<dyn std::error::Error>> {
+    let result = runtime.send_command(command).await?;
     info!("LIST command server response: {}", result);
 
     let data_stream = TcpStream::connect(format!("localhost:{}", runtime.data_port.unwrap())).await?;
@@ -28,7 +28,6 @@ pub async fn handle_list(runtime: &mut Runtime) ->  Result<String, Box<dyn std::
 
 pub async fn handle_retr(runtime: &mut Runtime, command: &str) ->  Result<String, Box<dyn std::error::Error>> {
     let result = runtime.send_command(command).await?;
-    // let result = commands::send_command_tls(stream, command).await?;
     info!("RETR commands server response: {}", result);
     let filename = command.split_whitespace().nth(1).unwrap();
 

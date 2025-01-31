@@ -32,7 +32,7 @@ impl Runtime {
     }
 
     async fn connect(&mut self, config: &Config) -> Result<(), Box<dyn Error>> {
-        info!("Connecting to FTP server");
+        info!("Connecting to FTP server: {}", config.server);
 
         let mut tcp_stream = TcpStream::connect(format!("{}:{}", config.server, config.port)).await?;
         let mut reader = BufReader::new(&mut tcp_stream);
@@ -61,9 +61,9 @@ impl Runtime {
     pub async fn send_command(&mut self, command: &str) -> Result<String, Box<dyn Error>> {
         info!("Sending command: {}", command);
         if self.control_channel_tls_stream.is_some() {
-            commands::send_command_tls(self.control_channel_tls_stream.as_mut().unwrap(), command).await
+            commands::send_command_internal(self.control_channel_tls_stream.as_mut().unwrap(), command).await
         } else {
-            commands::send_command_plain(self.control_channel_tcp_stream.as_mut().unwrap(), command).await
+            commands::send_command_internal(self.control_channel_tcp_stream.as_mut().unwrap(), command).await
         }
     }
 
